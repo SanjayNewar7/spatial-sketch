@@ -28,14 +28,14 @@
   --safe-r:env(safe-area-inset-right,0px);
 }
 html.light{
-  --bg:#f4f4f6;--bg2:#ebebee;--bg3:#e0e0e5;
-  --border:rgba(0,0,0,0.09);--ba:rgba(0,0,0,0.18);
-  --text:#1a1a2e;--muted:rgba(26,26,46,0.5);--dim:rgba(26,26,46,0.32);
-  --shadow:rgba(0,0,0,.12);
-  --filmstrip-bg:rgba(230,230,238,.97);
-  --canvas-overlay-bg:rgba(240,240,246,.9);
-  --zbtn-bg:rgba(240,240,246,.9);
-  --pan-badge-bg:rgba(124,106,247,.12);
+  --bg:#eeedf2;--bg2:#e5e4ea;--bg3:#d8d7de;
+  --border:rgba(0,0,0,0.10);--ba:rgba(0,0,0,0.20);
+  --text:#1e1c2e;--muted:rgba(30,28,46,0.52);--dim:rgba(30,28,46,0.34);
+  --shadow:rgba(0,0,0,.14);
+  --filmstrip-bg:rgba(220,219,228,.98);
+  --canvas-overlay-bg:rgba(225,224,232,.92);
+  --zbtn-bg:rgba(225,224,232,.92);
+  --pan-badge-bg:rgba(124,106,247,.13);
 }
 
 /* ══ RESET ══════════════════════════════════════════════════ */
@@ -343,91 +343,151 @@ input[type=number]{-moz-appearance:textfield}
   .hbtn{padding:4px 8px;font-size:9.5px;}
 }
 
-/* Mobile (≤ 640px) — full mobile layout */
+/* Mobile (≤ 640px) */
 @media (max-width:640px){
-  :root{
-    --hh:var(--mob-hh);
-    --filmh:var(--mob-filmh);
-  }
+  :root{--hh:var(--mob-hh);--filmh:var(--mob-filmh);}
 
-  /* Hide desktop left toolbar and right panel by default on mobile — they slide in/out */
+  /* ── LEFT TOOLBAR: fixed overlay, uses translateX to slide in/out ──
+     This avoids the width:0 vs width:60px conflict that broke collapse */
   .tbar{
-    position:fixed;left:0;top:var(--mob-hh);bottom:calc(var(--mob-tbar) + var(--mob-filmh) + var(--safe-b));
-    z-index:300;
-    width:60px;
-    border-radius:0 12px 12px 0;
-    box-shadow:4px 0 24px var(--shadow);
-    padding:10px 0;
+    position:fixed;
+    left:0;
+    top:var(--mob-hh);
+    bottom:calc(var(--mob-tbar) + var(--mob-filmh) + var(--safe-b));
+    width:64px;
+    z-index:400;
+    border-radius:0 14px 14px 0;
+    box-shadow:4px 0 28px var(--shadow);
+    padding:12px 0;
     overflow-y:auto;
-    /* Start collapsed on mobile */
+    overflow-x:hidden;
+    /* animate via transform, not width */
+    transition:transform .28s cubic-bezier(.4,0,.2,1), opacity .22s ease;
+    transform:translateX(0);
+    opacity:1;
   }
-  .tbar:not(.collapsed){
-    width:60px;opacity:1;
+  /* collapsed = slide off-screen left */
+  .tbar.collapsed{
+    transform:translateX(-110%) !important;
+    opacity:0 !important;
+    pointer-events:none !important;
   }
 
+  /* ── LEFT TOGGLE TAB: fixed to screen left edge, always visible ── */
   .left-panel-toggle{
-    top:calc(var(--mob-hh) + 60px);
-    left:0;transform:none;
-    width:16px;height:44px;
+    display:flex !important;  /* override any desktop hide */
+    position:fixed;
+    left:0;
+    top:calc(var(--mob-hh) + 90px);
+    transform:none;
+    width:18px;
+    height:48px;
     border-radius:0 8px 8px 0;
+    z-index:410;
+    border-left:none;
   }
 
-  /* Hide left toggle tab — we use bottom bar instead */
-  .left-panel-toggle{display:none;}
-
+  /* ── RIGHT PANEL: also uses translateX ── */
   .panel-right{
-    position:fixed;right:0;top:var(--mob-hh);bottom:calc(var(--mob-tbar) + var(--mob-filmh) + var(--safe-b));
-    z-index:300;
-    width:260px;
-    border-radius:12px 0 0 12px;
-    box-shadow:-4px 0 24px var(--shadow);
-  }
-  .panel-right.collapsed{width:0;opacity:0;}
-
-  /* floating right panel toggle stays */
-  .panel-toggle{
+    position:fixed;
     right:0;
-    width:16px;height:44px;
+    top:var(--mob-hh);
+    bottom:calc(var(--mob-tbar) + var(--mob-filmh) + var(--safe-b));
+    width:272px;
+    z-index:400;
+    border-radius:14px 0 0 14px;
+    box-shadow:-4px 0 28px var(--shadow);
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    transition:transform .28s cubic-bezier(.4,0,.2,1), opacity .22s ease;
+    transform:translateX(0);
+    opacity:1;
+  }
+  .panel-right.collapsed{
+    transform:translateX(110%) !important;
+    opacity:0 !important;
+    pointer-events:none !important;
   }
 
-  /* canvas hint — shorter on mobile */
+  /* right toggle tab */
+  .panel-toggle{right:0;width:18px;height:48px;}
+
+  /* dim backdrop */
+  .mob-backdrop{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(0,0,0,.38);
+    z-index:390;
+    backdrop-filter:blur(1px);
+    -webkit-backdrop-filter:blur(1px);
+  }
+  .mob-backdrop.show{display:block;}
+
+  /* canvas elements */
   .canvas-hint{font-size:9px;padding:4px 10px;}
   .axis-svg{bottom:8px;left:8px;width:54px;height:54px;}
   .zoom-wrap{bottom:8px;right:8px;}
   .zbtn{width:36px;height:36px;font-size:18px;}
 
-  /* Show mobile bottom toolbar */
+  /* bottom toolbar */
   .mob-toolbar{display:flex;}
 
-  /* Header — compact */
+  /* header compact */
   .logo{font-size:14px;}
   .logo-dot{width:6px;height:6px;}
-  .mode-pill{display:none;} /* moved to bottom bar on mobile */
+  .mode-pill{display:none;}
   .header-right .hbtn{padding:4px 7px;font-size:9px;}
 
-  /* Filmstrip */
+  /* filmstrip */
   .filmstrip{height:var(--mob-filmh);padding:0 8px;}
   .film-slot{width:56px;height:56px;}
   .film-add{width:54px;height:54px;font-size:8.5px;}
-
-  /* Panel right scrollable */
-  .panel-right{overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  /* always show delete on mobile (no hover state) */
+  .film-slot .film-del{display:flex;}
 }
 
 /* Very small phones */
 @media (max-width:380px){
   .mob-toolbar{height:52px;}
   .mob-ti-lbl{font-size:7px;}
-  .header-right .hbtn{display:none;}
+  .header-right .hbtn:not(.keep){display:none;}
   .header-right .theme-btn{display:flex;}
-  /* Keep only essential header buttons */
-  .header-right .hbtn.keep{display:flex;}
 }
+
+/* ══ LIGHT MODE — softer panels, less glare ══════════════════ */
+html.light header,
+html.light .tbar,
+html.light .panel-right,
+html.light .filmstrip,
+html.light .mob-toolbar{ background:var(--bg); }
+
+html.light .ps{ background:var(--bg); border-bottom-color:var(--border); }
+html.light .scard{ background:var(--bg3); }
+html.light .bc{ background:var(--bg3); }
+html.light .lr{ background:var(--bg3); }
+html.light .hbtn{ background:var(--bg2); border-color:var(--border); }
+html.light .theme-btn{ background:var(--bg2); border-color:var(--border); }
+html.light .mode-pill{ background:var(--bg2); }
+html.light .panel-toggle,html.light .left-panel-toggle{ background:var(--bg2); border-color:var(--border); }
+html.light .zbtn{ background:var(--bg2); border-color:var(--border); }
+html.light .ai input[type=number]{ background:var(--bg2); border-color:var(--border); }
+html.light input[type=range]{ background:var(--bg3); }
+html.light .go-btn{ background:rgba(124,106,247,.10); }
+html.light .alb{ background:var(--bg2); }
+html.light .pb{ background:var(--bg2); }
+html.light .mob-sep{ background:var(--border); }
+html.light .film-slot{ background:var(--bg3); }
+html.light .tbar{ border-right-color:var(--border); }
+html.light .mob-toolbar{ border-top-color:var(--border); }
+html.light #bgHexInput{ background:var(--bg2); border-color:var(--border); }
+html.light .mode-btn{ color:var(--muted); }
+html.light .ti:hover{ background:var(--bg3); }
 </style>
 </head>
 <body>
+<!-- dim backdrop for mobile panel overlays -->
+<div class="mob-backdrop" id="mobBackdrop" onclick="closeAllMobilePanels()"></div>
 
-<header>
   <div class="logo"><div class="logo-dot"></div>Spatial Sketch</div>
 
   <!-- Desktop mode pill — hidden on mobile, replaced by bottom bar -->
@@ -1768,14 +1828,22 @@ function toggleTheme(){
 let leftPanelOpen=true;
 let panelOpen=true;
 
+function isMobile(){return window.innerWidth<=640;}
+
+function updateBackdrop(){
+  const bd=document.getElementById('mobBackdrop');
+  if(!bd)return;
+  if(isMobile()&&(leftPanelOpen||panelOpen)) bd.classList.add('show');
+  else bd.classList.remove('show');
+}
+
 function toggleLeftPanel(){
   leftPanelOpen=!leftPanelOpen;
   const tbar=document.getElementById('leftTbar');
   const btn=document.getElementById('leftPanelToggleBtn');
   tbar.classList.toggle('collapsed',!leftPanelOpen);
-  // When open: › means "click to collapse leftward"
-  // When collapsed: ‹ means "click to reveal rightward" — mirrors right panel arrow logic
   btn.textContent=leftPanelOpen?'›':'‹';
+  updateBackdrop();
   setTimeout(resizeR,300);
 }
 
@@ -1787,18 +1855,42 @@ function togglePanel(){
   panel.classList.toggle('collapsed',!panelOpen);
   btn.textContent=panelOpen?'‹':'›';
   if(mobBtn)mobBtn.classList.toggle('on',panelOpen);
+  updateBackdrop();
   setTimeout(resizeR,300);
 }
 
+function closeAllMobilePanels(){
+  if(!isMobile())return;
+  if(leftPanelOpen){
+    leftPanelOpen=false;
+    document.getElementById('leftTbar').classList.add('collapsed');
+    document.getElementById('leftPanelToggleBtn').textContent='‹';
+  }
+  if(panelOpen){
+    panelOpen=false;
+    document.getElementById('panelRight').classList.add('collapsed');
+    document.getElementById('panelToggleBtn').textContent='›';
+    const b=document.getElementById('mob-panel');if(b)b.classList.remove('on');
+  }
+  updateBackdrop();
+}
+
 function closeMobilePanels(){
-  // On mobile, close panels when tapping canvas so you get full drawing area
-  if(window.innerWidth<=640){
+  // Close right panel when tapping canvas — left stays (tools needed)
+  if(isMobile()){
     if(panelOpen){
       panelOpen=false;
       document.getElementById('panelRight').classList.add('collapsed');
       document.getElementById('panelToggleBtn').textContent='›';
       const b=document.getElementById('mob-panel');if(b)b.classList.remove('on');
     }
+    // also close left if it was opened
+    if(leftPanelOpen){
+      leftPanelOpen=false;
+      document.getElementById('leftTbar').classList.add('collapsed');
+      document.getElementById('leftPanelToggleBtn').textContent='‹';
+    }
+    updateBackdrop();
   }
 }
 
@@ -2133,8 +2225,19 @@ if('ontouchstart' in window){
   document.getElementById('hint').textContent='Draw · 1 finger draw · 2 fingers pan/zoom';
 }
 
-// Left panel toggle init — open=› (click to collapse), collapsed=‹ (click to expand)
-document.getElementById('leftPanelToggleBtn').textContent=leftPanelOpen?'›':'‹';
+// Left panel: start COLLAPSED on mobile, open on desktop
+if(isMobile()){
+  leftPanelOpen=false;
+  document.getElementById('leftTbar').classList.add('collapsed');
+  document.getElementById('leftPanelToggleBtn').textContent='‹';
+}else{
+  leftPanelOpen=true;
+  document.getElementById('leftPanelToggleBtn').textContent='›';
+}
+// Right panel starts open everywhere
+panelOpen=true;
+document.getElementById('panelToggleBtn').textContent='‹';
+updateBackdrop();
 
 // Restore theme
 try{
