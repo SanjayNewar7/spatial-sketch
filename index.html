@@ -43,21 +43,71 @@ html.light{
 html,body{touch-action:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
 body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;height:100dvh;width:100vw;display:flex;flex-direction:column;transition:background .25s,color .25s}
 
-/* ── HEADER ── */
-header{height:var(--hh);display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;z-index:200;gap:8px;transition:background .25s,border-color .25s}
+/* ── HEADER ── FIXED: proper flexbox alignment with no overflow issues */
+header{
+  height:var(--hh);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 12px;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+  z-index:200;
+  gap:8px;
+  transition:background .25s,border-color .25s;
+  min-width:0;
+  width:100%;
+}
+
+/* Left slot: logo — fixed width, never shrinks */
+.header-left{
+  display:flex;
+  align-items:center;
+  flex-shrink:0;
+  gap:0;
+}
+
+/* Center slot: mode pill — centered with flex-grow */
+.header-center{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:1;
+  min-width:0;
+}
+
+/* Right slot: action buttons — flex end, scrollable on small screens */
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  flex-shrink:0;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  max-width:60%;
+}
+.header-right::-webkit-scrollbar{display:none}
+
 .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;letter-spacing:-.5px;display:flex;align-items:center;gap:7px;flex-shrink:0}
 .logo-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
 .mode-pill{display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:3px;gap:2px;flex-shrink:0}
 .mode-btn{font-family:'DM Mono',monospace;font-size:11px;padding:4px 12px;border-radius:5px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;touch-action:manipulation}
 .mode-btn.active{background:var(--accent);color:#fff;box-shadow:0 0 14px rgba(124,106,247,.4)}
-.hbtn{font-family:'DM Mono',monospace;font-size:10px;padding:5px 11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;touch-action:manipulation}
+.hbtn{font-family:'DM Mono',monospace;font-size:10px;padding:5px 11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;touch-action:manipulation;flex-shrink:0}
 .hbtn:hover{border-color:var(--ba);color:var(--text)}
 .hbtn.danger:hover{border-color:rgba(247,106,138,.5);color:var(--a2)}
 .hbtn.on{background:rgba(124,106,247,.12);border-color:rgba(124,106,247,.4);color:var(--accent)}
-.header-right{display:flex;align-items:center;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-.header-right::-webkit-scrollbar{display:none}
 .theme-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;flex-shrink:0;touch-action:manipulation}
 .theme-btn:hover{border-color:var(--ba);color:var(--text)}
+
+/* header divider (the visual separator bar between buttons) */
+.hbtn-sep{
+  width:1px;height:18px;background:var(--border);
+  flex-shrink:0;align-self:center;
+  border:none;padding:0;margin:0 2px;
+  pointer-events:none;
+}
 
 /* ── BODY ── */
 .app-body{display:flex;flex:1;overflow:hidden;min-height:0}
@@ -81,7 +131,6 @@ header{height:var(--hh);display:flex;align-items:center;justify-content:space-be
 }
 .tbar::-webkit-scrollbar{display:none}
 
-/* Left panel toggle tab — floats at left edge of canvas */
 .left-panel-toggle{
   position:absolute;top:50%;left:0;transform:translateY(-50%);
   width:18px;height:52px;
@@ -122,7 +171,7 @@ header{height:var(--hh);display:flex;align-items:center;justify-content:space-be
 .zbtn{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:var(--zbtn-bg);color:var(--muted);cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;transition:all .2s;backdrop-filter:blur(10px);line-height:1;touch-action:manipulation}
 .zbtn:hover{border-color:var(--ba);color:var(--text)}
 
-/* ── PANEL TOGGLE BUTTON (floats at right edge of canvas) ── */
+/* ── PANEL TOGGLE BUTTON ── */
 .panel-toggle{
   position:absolute;top:50%;right:0;transform:translateY(-50%);
   width:18px;height:52px;
@@ -143,8 +192,40 @@ header{height:var(--hh);display:flex;align-items:center;justify-content:space-be
 .filmstrip{height:var(--filmh);background:var(--filmstrip-bg);border-top:1px solid var(--border);display:flex;align-items:center;gap:0;flex-shrink:0;overflow-x:auto;overflow-y:hidden;padding:0 12px;position:relative;z-index:50;-webkit-overflow-scrolling:touch;}
 .filmstrip::-webkit-scrollbar{height:3px}
 .filmstrip::-webkit-scrollbar-thumb{background:rgba(124,106,247,.4);border-radius:2px}
+
+/* Filmstrip limit badge */
+.film-limit-badge{
+  flex-shrink:0;
+  display:flex;align-items:center;gap:5px;
+  padding:4px 10px;
+  border-radius:20px;
+  border:1px solid var(--border);
+  background:transparent;
+  font-size:8.5px;
+  color:var(--dim);
+  white-space:nowrap;
+  margin-left:4px;
+}
+.film-limit-badge.at-limit{
+  border-color:rgba(247,106,138,.35);
+  color:var(--a2);
+  background:rgba(247,106,138,.05);
+}
+.film-limit-badge .flb-count{
+  font-size:10px;
+  font-weight:500;
+  color:var(--muted);
+}
+.film-limit-badge.at-limit .flb-count{
+  color:var(--a2);
+}
+
 .film-add{flex-shrink:0;width:64px;height:64px;border-radius:8px;border:1px dashed var(--ba);background:transparent;color:var(--dim);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;letter-spacing:.3px;transition:all .2s;margin-right:8px;font-family:'DM Mono',monospace;touch-action:manipulation}
 .film-add:hover{border-color:rgba(124,106,247,.5);color:var(--accent);background:rgba(124,106,247,.06)}
+.film-add:disabled,.film-add.disabled{
+  opacity:.35;cursor:not-allowed;pointer-events:none;
+  border-color:var(--border);color:var(--dim);
+}
 .film-slot{flex-shrink:0;position:relative;width:68px;height:68px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:all .25s;margin-right:6px;background:var(--bg3);touch-action:manipulation}
 .film-slot:hover{border-color:var(--ba);transform:translateY(-2px)}
 .film-slot.active{border-color:var(--accent);box-shadow:0 0 14px rgba(124,106,247,.5)}
@@ -341,14 +422,32 @@ input[type=number]{-moz-appearance:textfield}
   .logo-dot{width:6px;height:6px;}
   .logo{font-size:15px;}
   .hbtn{padding:4px 8px;font-size:9.5px;}
+  .header-right{max-width:55%;}
+}
+
+/* Medium screens: hide less-used buttons */
+@media (max-width:720px){
+  .hbtn.hide-md{display:none;}
+  .header-right{max-width:50%;}
 }
 
 /* Mobile (≤ 640px) */
 @media (max-width:640px){
   :root{--hh:var(--mob-hh);--filmh:var(--mob-filmh);}
 
-  /* ── LEFT TOOLBAR: fixed overlay, uses translateX to slide in/out ──
-     This avoids the width:0 vs width:60px conflict that broke collapse */
+  /* header adjustments for mobile */
+  header{padding:0 8px;gap:6px;}
+  .header-left{flex-shrink:0;}
+  .header-center{display:none;}/* mode pill hidden on mobile, replaced by bottom bar */
+  .header-right{max-width:none;gap:4px;}
+  .logo{font-size:14px;}
+  .logo-dot{width:6px;height:6px;}
+  .hbtn{padding:4px 7px;font-size:9px;}
+
+  /* hide non-essential buttons on mobile */
+  .hbtn.hide-mob{display:none!important;}
+
+  /* ── LEFT TOOLBAR: fixed overlay ── */
   .tbar{
     position:fixed;
     left:0;
@@ -361,21 +460,18 @@ input[type=number]{-moz-appearance:textfield}
     padding:12px 0;
     overflow-y:auto;
     overflow-x:hidden;
-    /* animate via transform, not width */
     transition:transform .28s cubic-bezier(.4,0,.2,1), opacity .22s ease;
     transform:translateX(0);
     opacity:1;
   }
-  /* collapsed = slide off-screen left */
   .tbar.collapsed{
     transform:translateX(-110%) !important;
     opacity:0 !important;
     pointer-events:none !important;
   }
 
-  /* ── LEFT TOGGLE TAB: fixed to screen left edge, always visible ── */
   .left-panel-toggle{
-    display:flex !important;  /* override any desktop hide */
+    display:flex !important;
     position:fixed;
     left:0;
     top:calc(var(--mob-hh) + 90px);
@@ -387,7 +483,7 @@ input[type=number]{-moz-appearance:textfield}
     border-left:none;
   }
 
-  /* ── RIGHT PANEL: also uses translateX ── */
+  /* ── RIGHT PANEL: translateX ── */
   .panel-right{
     position:fixed;
     right:0;
@@ -409,7 +505,6 @@ input[type=number]{-moz-appearance:textfield}
     pointer-events:none !important;
   }
 
-  /* right toggle tab */
   .panel-toggle{right:0;width:18px;height:48px;}
 
   /* dim backdrop */
@@ -432,29 +527,25 @@ input[type=number]{-moz-appearance:textfield}
   /* bottom toolbar */
   .mob-toolbar{display:flex;}
 
-  /* header compact */
-  .logo{font-size:14px;}
-  .logo-dot{width:6px;height:6px;}
-  .mode-pill{display:none;}
-  .header-right .hbtn{padding:4px 7px;font-size:9px;}
-
   /* filmstrip */
   .filmstrip{height:var(--mob-filmh);padding:0 8px;}
   .film-slot{width:56px;height:56px;}
   .film-add{width:54px;height:54px;font-size:8.5px;}
-  /* always show delete on mobile (no hover state) */
   .film-slot .film-del{display:flex;}
+  .film-limit-badge{font-size:7.5px;padding:3px 7px;}
 }
 
 /* Very small phones */
 @media (max-width:380px){
   .mob-toolbar{height:52px;}
   .mob-ti-lbl{font-size:7px;}
-  .header-right .hbtn:not(.keep){display:none;}
-  .header-right .theme-btn{display:flex;}
+  .hbtn.keep-xs{/* only show keep-xs on tiny screens */}
+  /* hide even more buttons */
+  .hbtn:not(.keep-xs):not(.theme-btn){display:none;}
+  .theme-btn{display:flex;}
 }
 
-/* ══ LIGHT MODE — softer panels, less glare ══════════════════ */
+/* ══ LIGHT MODE ══════════════════════════════════════════════ */
 html.light header,
 html.light .tbar,
 html.light .panel-right,
@@ -482,28 +573,42 @@ html.light .mob-toolbar{ border-top-color:var(--border); }
 html.light #bgHexInput{ background:var(--bg2); border-color:var(--border); }
 html.light .mode-btn{ color:var(--muted); }
 html.light .ti:hover{ background:var(--bg3); }
+html.light .film-limit-badge{ background:var(--bg2); }
 </style>
 </head>
 <body>
 <!-- dim backdrop for mobile panel overlays -->
 <div class="mob-backdrop" id="mobBackdrop" onclick="closeAllMobilePanels()"></div>
 
-  <div class="logo"><div class="logo-dot"></div>Spatial Sketch</div>
-
-  <!-- Desktop mode pill — hidden on mobile, replaced by bottom bar -->
-  <div class="mode-pill">
-    <button class="mode-btn active" id="btn-draw" onclick="setMode('draw')">✏ Draw</button>
-    <button class="mode-btn" id="btn-orbit" onclick="setMode('orbit')">⊙ Orbit</button>
+<!-- ════════════════════════════════════════════════════════
+     HEADER — Three-zone layout: left | center | right
+     ════════════════════════════════════════════════════════ -->
+<header>
+  <!-- LEFT: Logo -->
+  <div class="header-left">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      Spatial Sketch
+    </div>
   </div>
 
+  <!-- CENTER: Mode pill (hidden on mobile) -->
+  <div class="header-center">
+    <div class="mode-pill">
+      <button class="mode-btn active" id="btn-draw" onclick="setMode('draw')">✏ Draw</button>
+      <button class="mode-btn" id="btn-orbit" onclick="setMode('orbit')">⊙ Orbit</button>
+    </div>
+  </div>
+
+  <!-- RIGHT: Action buttons -->
   <div class="header-right">
-    <button class="theme-btn keep" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
-    <button class="hbtn keep" style="color:var(--a3);border-color:rgba(106,247,196,.25)" onclick="saveProject()">Save</button>
-    <button class="hbtn" onclick="loadProject()">Load</button>
-    <button class="hbtn" onclick="newProject()">New</button>
-    <div style="width:1px;height:18px;background:var(--border);margin:0 2px" class="hbtn" style="padding:0;border:none"></div>
-    <button class="hbtn" id="gridBtn" onclick="toggleGrid()">Grid On</button>
-    <button class="hbtn" onclick="resetPan()">Center</button>
+    <button class="theme-btn keep-xs" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
+    <button class="hbtn" style="color:var(--a3);border-color:rgba(106,247,196,.25)" onclick="saveProject()">Save</button>
+    <button class="hbtn hide-mob" onclick="loadProject()">Load</button>
+    <button class="hbtn hide-mob" onclick="newProject()">New</button>
+    <div class="hbtn-sep"></div>
+    <button class="hbtn hide-md" id="gridBtn" onclick="toggleGrid()">Grid On</button>
+    <button class="hbtn hide-mob" onclick="resetPan()">Center</button>
     <button class="hbtn" onclick="exportPNG()">Export</button>
     <button class="hbtn danger" onclick="clearAll()">Clear</button>
   </div>
@@ -582,6 +687,11 @@ html.light .ti:hover{ background:var(--bg3); }
       </button>
       <div class="film-divider"></div>
       <div id="film-slots" style="display:flex;gap:6px;align-items:center"></div>
+      <!-- Limit badge — shown after filmstrip slots -->
+      <div class="film-limit-badge" id="filmLimitBadge">
+        <span class="flb-count" id="filmLimitCount">0</span>
+        <span>/ 12 angles</span>
+      </div>
     </div>
   </div>
 
@@ -673,7 +783,6 @@ html.light .ti:hover{ background:var(--bg3); }
         <span style="font-size:7.5px;color:var(--accent);background:rgba(124,106,247,.12);border:1px solid rgba(124,106,247,.3);border-radius:4px;padding:1px 5px">NEW</span>
       </div>
       <div id="skyScenes" style="display:grid;grid-template-columns:1fr 1fr;gap:6px"></div>
-      <!-- Active sky label -->
       <div id="activeSkyLabel" style="font-size:8px;color:var(--accent);margin-top:6px;text-align:center;min-height:12px;letter-spacing:.3px"></div>
     </div>
 
@@ -724,7 +833,6 @@ html.light .ti:hover{ background:var(--bg3); }
 
 <!-- MOBILE BOTTOM TOOLBAR -->
 <div class="mob-toolbar" id="mobToolbar">
-  <!-- Draw/Orbit toggle -->
   <button class="mob-ti" id="mob-draw" onclick="setMode('draw');closeMobilePanels()">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><circle cx="11" cy="11" r="2"/></svg>
     <span class="mob-ti-lbl">Draw</span>
@@ -734,23 +842,19 @@ html.light .ti:hover{ background:var(--bg3); }
     <span class="mob-ti-lbl">Orbit</span>
   </button>
   <div class="mob-sep"></div>
-  <!-- Pen -->
   <button class="mob-ti on" id="mob-pen" onclick="selectTool('pen');closeMobilePanels()">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><circle cx="11" cy="11" r="2"/></svg>
     <span class="mob-ti-lbl">Pen</span>
   </button>
-  <!-- Marker -->
   <button class="mob-ti" id="mob-marker" onclick="selectTool('marker');closeMobilePanels()">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 17h5l9.5-9.5-5-5L3 12v5z"/><path d="M12.5 2.5l5 5"/><path d="M3 21h8"/></svg>
     <span class="mob-ti-lbl">Marker</span>
   </button>
-  <!-- Eraser -->
   <button class="mob-ti" id="mob-eraser" onclick="selectTool('eraser');closeMobilePanels()">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 20H7L3 16l11-11 6 6-3.5 3.5"/><path d="M6 18l3-3"/></svg>
     <span class="mob-ti-lbl">Erase</span>
   </button>
   <div class="mob-sep"></div>
-  <!-- Undo / Redo -->
   <button class="mob-ti" onclick="doUndo()">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 010 11H11"/></svg>
     <span class="mob-ti-lbl">Undo</span>
@@ -760,7 +864,6 @@ html.light .ti:hover{ background:var(--bg3); }
     <span class="mob-ti-lbl">Redo</span>
   </button>
   <div class="mob-sep"></div>
-  <!-- Panel toggle (open right panel) -->
   <button class="mob-ti" id="mob-panel" onclick="togglePanel()">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
     <span class="mob-ti-lbl">Panel</span>
@@ -769,6 +872,11 @@ html.light .ti:hover{ background:var(--bg3); }
 
 <script>
 // ════════════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════════════
+const MAX_FILMSTRIPS = 12; // Memory limit
+
+// ════════════════════════════════════════════════════════════
 // STATE
 // ════════════════════════════════════════════════════════════
 let mode='draw', tool='pen', strokeColor='#ff6b6b', brushSize=3, brushOpac=1, bri=100;
@@ -776,7 +884,6 @@ let layerIdx=0, dp='cam';
 let showGrid=true, bgColor='#0a0a0f';
 let totalS=0;
 
-// Undo / redo stacks
 const undoStack=[], redoStack=[];
 
 const SWATCHES=['#ff6b6b','#ff9f43','#ffd93d','#6bcb77','#4d96ff','#7c6af7','#f76a8a','#6af7c4','#ffffff','#c8c8d8','#888898','#444455','#ffcccc','#ffecc4','#d4f5d4','#cce0ff'];
@@ -795,7 +902,6 @@ let layers=[
 
 let savedAngles=[];
 
-// Pan target
 let panTarget=new THREE.Vector3(0,0,0);
 let spaceDown=false, panDrag=false, panLast={x:0,y:0};
 
@@ -811,11 +917,9 @@ const scene=new THREE.Scene();
 const cam=new THREE.PerspectiveCamera(55,1,0.1,3000);
 let sph={r:460,theta:0,phi:87*Math.PI/180};
 
-// Grid
 const gridMesh=new THREE.GridHelper(500,28,0x131322,0x0e0e1c);
 gridMesh.rotation.x=Math.PI/2; scene.add(gridMesh);
 
-// Reference planes
 let refPlanes=[];
 function buildRefPlanes(){
   refPlanes.forEach(m=>scene.remove(m)); refPlanes=[];
@@ -1126,14 +1230,9 @@ cv.addEventListener('mouseleave',()=>{
 cv.addEventListener('wheel',e=>{e.preventDefault();doZoom(e.deltaY*.3);},{passive:false});
 
 // ════════════════════════════════════════════════════════════
-// TOUCH EVENTS — full multi-touch handling
-// 1 finger → draw / orbit
-// 2 fingers → orbit (draw mode) or orbit (orbit mode) + pinch zoom
-// 2 fingers in orbit mode → pan + pinch zoom
+// TOUCH EVENTS
 // ════════════════════════════════════════════════════════════
-
 let touchState={
-  // active touches stored by identifier
   touches:{},
   prevDist:0,
   prevMid:{x:0,y:0},
@@ -1148,35 +1247,20 @@ function showTouchBadge(){
   touchModeBadgeTimer=setTimeout(()=>b.classList.remove('show'),2000);
 }
 
-function getTwoFingerMid(t1,t2){
-  return{x:(t1.clientX+t2.clientX)/2, y:(t1.clientY+t2.clientY)/2};
-}
-function getTwoFingerDist(t1,t2){
-  return Math.hypot(t1.clientX-t2.clientX, t1.clientY-t2.clientY);
-}
+function getTwoFingerMid(t1,t2){return{x:(t1.clientX+t2.clientX)/2,y:(t1.clientY+t2.clientY)/2};}
+function getTwoFingerDist(t1,t2){return Math.hypot(t1.clientX-t2.clientX,t1.clientY-t2.clientY);}
 
 cv.addEventListener('touchstart',e=>{
   e.preventDefault();
-  // Close mobile panels on canvas touch
   closeMobilePanels();
-
-  Array.from(e.changedTouches).forEach(t=>{
-    touchState.touches[t.identifier]=t;
-  });
-
+  Array.from(e.changedTouches).forEach(t=>{touchState.touches[t.identifier]=t;});
   const allTouches=Object.values(touchState.touches);
-
   if(allTouches.length===1){
     touchState.twoFingerActive=false;
     const t=allTouches[0];
-    if(mode==='orbit'){
-      oStart(t.clientX,t.clientY);
-    }else{
-      // draw mode: single finger draws
-      startDraw(t.clientX,t.clientY);
-    }
+    if(mode==='orbit'){oStart(t.clientX,t.clientY);}
+    else{startDraw(t.clientX,t.clientY);}
   }else if(allTouches.length>=2){
-    // 2+ fingers: cancel any ongoing single-finger draw/orbit
     if(drawing){endDraw();}
     oDrag=false;
     touchState.twoFingerActive=true;
@@ -1190,60 +1274,29 @@ cv.addEventListener('touchstart',e=>{
 
 cv.addEventListener('touchmove',e=>{
   e.preventDefault();
-
-  // Update stored touch positions
-  Array.from(e.changedTouches).forEach(t=>{
-    touchState.touches[t.identifier]=t;
-  });
-
+  Array.from(e.changedTouches).forEach(t=>{touchState.touches[t.identifier]=t;});
   const allTouches=Object.values(touchState.touches);
-
   if(allTouches.length===1&&!touchState.twoFingerActive){
     const t=allTouches[0];
-    if(mode==='orbit'){
-      oMove(t.clientX,t.clientY);
-    }else{
-      if(tool==='eraser'){eraseAt(t.clientX,t.clientY);}
-      else{contDraw(t.clientX,t.clientY);}
-    }
+    if(mode==='orbit'){oMove(t.clientX,t.clientY);}
+    else{if(tool==='eraser'){eraseAt(t.clientX,t.clientY);}else{contDraw(t.clientX,t.clientY);}}
   }else if(allTouches.length>=2){
     const t1=allTouches[0],t2=allTouches[1];
     const newDist=getTwoFingerDist(t1,t2);
     const newMid=getTwoFingerMid(t1,t2);
-
-    // Pinch zoom
-    if(touchState.prevDist>0){
-      const delta=touchState.prevDist-newDist;
-      doZoom(delta*1.2);
-    }
-
-    // 2-finger pan (always) + 2-finger orbit (orbit mode)
-    if(mode==='orbit'){
-      // orbit with 2-finger midpoint
-      oMove(newMid.x,newMid.y);
-    }else{
-      // draw mode: 2 fingers = pan the scene
-      panMove(newMid.x,newMid.y);
-    }
-
+    if(touchState.prevDist>0){const delta=touchState.prevDist-newDist;doZoom(delta*1.2);}
+    if(mode==='orbit'){oMove(newMid.x,newMid.y);}
+    else{panMove(newMid.x,newMid.y);}
     touchState.prevDist=newDist;
     touchState.prevMid=newMid;
-
-    // Start pan drag if not already
-    if(!panDrag&&mode==='draw'){
-      panStart(newMid.x,newMid.y);
-    }
+    if(!panDrag&&mode==='draw'){panStart(newMid.x,newMid.y);}
   }
 },{passive:false});
 
 cv.addEventListener('touchend',e=>{
   e.preventDefault();
-  Array.from(e.changedTouches).forEach(t=>{
-    delete touchState.touches[t.identifier];
-  });
-
+  Array.from(e.changedTouches).forEach(t=>{delete touchState.touches[t.identifier];});
   const remaining=Object.values(touchState.touches).length;
-
   if(remaining===0){
     touchState.twoFingerActive=false;
     oEnd();
@@ -1252,17 +1305,12 @@ cv.addEventListener('touchend',e=>{
     else if(tool==='eraser'){drawing=false;}
     touchState.prevDist=0;
   }else if(remaining===1){
-    // went from 2 fingers to 1: stop pan/zoom, resume single-finger action
     touchState.twoFingerActive=false;
     if(panDrag)panEnd();
     oEnd();
     const t=Object.values(touchState.touches)[0];
-    if(mode==='orbit'){
-      oStart(t.clientX,t.clientY);
-    }else{
-      // restart draw from current finger position
-      startDraw(t.clientX,t.clientY);
-    }
+    if(mode==='orbit'){oStart(t.clientX,t.clientY);}
+    else{startDraw(t.clientX,t.clientY);}
     touchState.prevDist=0;
   }
 },{passive:false});
@@ -1276,7 +1324,6 @@ cv.addEventListener('touchcancel',e=>{
   if(drawing)endDraw();
 },{passive:false});
 
-// Double-tap to reset pan on mobile
 let lastTap=0;
 cv.addEventListener('touchend',e=>{
   const now=Date.now();
@@ -1364,13 +1411,10 @@ function applyHsl(){
 function setLightness(v){colorL=parseFloat(v);document.getElementById('lightVal').textContent=Math.round(colorL)+'%';applyHsl();}
 function setBri(v){setLightness(v);}
 
-// Mouse
 let wDrag=false;
 wc.addEventListener('mousedown',e=>{wDrag=true;pickW(e.clientX,e.clientY);});
 window.addEventListener('mousemove',e=>{if(wDrag)pickW(e.clientX,e.clientY);});
 window.addEventListener('mouseup',()=>wDrag=false);
-
-// Touch on color wheel
 wc.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];pickW(t.clientX,t.clientY);},{passive:false});
 wc.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches[0];pickW(t.clientX,t.clientY);},{passive:false});
 
@@ -1444,11 +1488,10 @@ function buildBgPresets(){
 function setBgColor(h){applyBgColor(h);}
 
 // ════════════════════════════════════════════════════════════
-// SKY SCENES — procedural animated backgrounds
+// SKY SCENES
 // ════════════════════════════════════════════════════════════
 let skyObjects=[], skyAnimId=null, skyActiveId=null;
 
-// ── tiny helper: sync bg UI fields without touching sky ──
 function syncBgUI(h){
   bgColor=h;
   document.getElementById('bgSwatchBox').style.background=h;
@@ -1460,14 +1503,12 @@ function syncBgUI(h){
   document.getElementById('bgB').value=b;document.getElementById('bgBv').textContent=b;
 }
 
-// ── dispose all sky objects and stop animation ──
 function clearSky(){
   if(skyAnimId){cancelAnimationFrame(skyAnimId);skyAnimId=null;}
   skyObjects.forEach(obj=>{
     scene.remove(obj);
     if(obj.geometry)obj.geometry.dispose();
     if(obj.material){if(Array.isArray(obj.material))obj.material.forEach(m=>m.dispose());else obj.material.dispose();}
-    // groups have children
     if(obj.children){obj.children.forEach(ch=>{if(ch.geometry)ch.geometry.dispose();if(ch.material)ch.material.dispose();});}
   });
   skyObjects=[];
@@ -1484,7 +1525,6 @@ function refreshSkyUI(){
   });
 }
 
-// ── sky dome: large sphere, vertex-gradient top→bottom ──
 function makeDome(topRgb,botRgb,midRgb,midT){
   const geo=new THREE.SphereGeometry(1400,32,20);
   const pos=geo.attributes.position;
@@ -1506,7 +1546,6 @@ function makeDome(topRgb,botRgb,midRgb,midT){
   return m;
 }
 
-// ── stars: random point cloud on a sphere ──
 function makeStars(count,radius,ptSize,opacity,colorPalette){
   const geo=new THREE.BufferGeometry();
   const pos=new Float32Array(count*3);
@@ -1530,7 +1569,6 @@ function makeStars(count,radius,ptSize,opacity,colorPalette){
   return pts;
 }
 
-// ── cloud: cluster of translucent blob-spheres ──
 function makeCloudGroup(x,y,z,scale,hex,opacity){
   const group=new THREE.Group();
   const blobs=[[0,0,0,1],[1.1,.2,0,.85],[-.9,.1,.3,.8],[.5,.7,.4,.7],[-.4,.6,-.3,.65],[.8,-.15,.5,.6],[1.7,.4,.2,.55],[-.7,.3,-.1,.5],[.2,.85,-.4,.5]];
@@ -1547,20 +1585,17 @@ function makeCloudGroup(x,y,z,scale,hex,opacity){
   return group;
 }
 
-// ── aurora curtain: animated wavy planes with vertex colors ──
 function makeAuroraCurtain(x,z,hue1,hue2){
   const W=600,H=400,segsX=30,segsY=12;
   const geo=new THREE.PlaneGeometry(W,H,segsX,segsY);
   const pos=geo.attributes.position;
   const cols=new Float32Array(pos.count*3);
-  // store original Y for wave animation
   const baseY=new Float32Array(pos.count);
   for(let i=0;i<pos.count;i++) baseY[i]=pos.getY(i);
   geo.setAttribute('baseY',new THREE.BufferAttribute(baseY,1));
-  // vertex colors: bottom=transparent(black), top=hue1/hue2 alternating
   function hsl2rgb(h,s,l){s/=100;l/=100;const k=n=>(n+h/30)%12,a=s*Math.min(l,1-l),f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));return[f(0),f(8),f(4)];}
   for(let i=0;i<pos.count;i++){
-    const nt=(pos.getY(i)/H)+0.5; // 0=bottom 1=top
+    const nt=(pos.getY(i)/H)+0.5;
     const nx=(pos.getX(i)/W)+0.5;
     const hue=hue1+(hue2-hue1)*nx;
     const[r,g,b]=hsl2rgb(hue,80,40+nt*25);
@@ -1576,15 +1611,13 @@ function makeAuroraCurtain(x,z,hue1,hue2){
   return{mesh:m,baseY,geo};
 }
 
-// ── milky way band ──
 function makeMilkyWay(){
   const count=4000;
   const geo=new THREE.BufferGeometry();
   const pos=new Float32Array(count*3),col=new Float32Array(count*3);
   for(let i=0;i<count;i++){
-    // concentrate stars in a band
     const th=Math.random()*Math.PI*2;
-    const bandPhi=Math.PI/2+(Math.random()-.5)*0.55; // tight equatorial band
+    const bandPhi=Math.PI/2+(Math.random()-.5)*0.55;
     const r=1100+Math.random()*200;
     pos[i*3]=r*Math.sin(bandPhi)*Math.cos(th);
     pos[i*3+1]=r*Math.cos(bandPhi);
@@ -1602,21 +1635,15 @@ function makeMilkyWay(){
   return pts;
 }
 
-// ═══════════════════════════
-// THE 7 SKY PRESETS
-// ═══════════════════════════
-
 const SKY_DEFS=[
   {
     id:'sunny',label:'☀ Sunny Day',emoji:'☀',
     grad:'linear-gradient(to bottom,#1a90e8 0%,#87ceeb 55%,#c8e8ff 100%)',
     build(){
-      renderer.setClearColor(0x87ceeb,1); syncBgUI('#87ceeb');
+      renderer.setClearColor(0x87ceeb,1);syncBgUI('#87ceeb');
       makeDome([0.1,.56,.91],[.78,.90,.97],[.45,.72,.90],.45);
-      // big fluffy white clouds
       const cd=[[-300,380,50,1.6,'#ffffff',.82],[600,320,-200,1.2,'#f0f8ff',.75],[-80,360,250,1.4,'#ffffff',.78],[-700,300,100,1.1,'#f5f5ff',.7],[400,350,-50,1.3,'#ffffff',.8]];
       const groups=cd.map(([x,y,z,s,c,o])=>makeCloudGroup(x,y,z,s,c,o));
-      let t=0;
       function anim(){skyAnimId=requestAnimationFrame(anim);groups.forEach((g,i)=>{g.position.x+=(i%2===0?.045:-.028);if(g.position.x>900)g.position.x=-900;if(g.position.x<-900)g.position.x=900;});}
       anim();
     }
@@ -1625,12 +1652,10 @@ const SKY_DEFS=[
     id:'golden',label:'🌅 Golden Hour',emoji:'🌅',
     grad:'linear-gradient(to bottom,#0d1b3e 0%,#8b1a1a 32%,#d4580a 62%,#f0a500 100%)',
     build(){
-      renderer.setClearColor(0xd4580a,1); syncBgUI('#d4580a');
+      renderer.setClearColor(0xd4580a,1);syncBgUI('#d4580a');
       makeDome([.05,.1,.24],[.94,.6,.06],[.53,.1,.07],.36);
-      // warm silhouette clouds
       const cd=[[-400,190,0,.8,'#ff8c42',.45],[320,175,80,.65,'#ff6b35',.4],[50,210,-180,.95,'#ffb347',.5],[550,160,30,.7,'#ff7043',.38]];
       const groups=cd.map(([x,y,z,s,c,o])=>makeCloudGroup(x,y,z,s,c,o));
-      let t=0;
       function anim(){skyAnimId=requestAnimationFrame(anim);groups.forEach((g,i)=>{g.position.x+=(i%2===0?.03:-.02);if(g.position.x>850)g.position.x=-850;if(g.position.x<-850)g.position.x=850;});}
       anim();
     }
@@ -1639,9 +1664,8 @@ const SKY_DEFS=[
     id:'cloudy',label:'☁ Overcast',emoji:'☁',
     grad:'linear-gradient(to bottom,#5a6572 0%,#7f8c8d 45%,#b0bec5 100%)',
     build(){
-      renderer.setClearColor(0x7f8c8d,1); syncBgUI('#7f8c8d');
+      renderer.setClearColor(0x7f8c8d,1);syncBgUI('#7f8c8d');
       makeDome([.35,.39,.43],[.69,.74,.75],[.5,.56,.58],.5);
-      // low dense grey cloud cover
       const shades=['#b0bec5','#cfd8dc','#90a4ae','#b0bec5','#eceff1'];
       const groups=[];
       for(let i=0;i<20;i++){
@@ -1657,7 +1681,7 @@ const SKY_DEFS=[
     id:'storm',label:'⛈ Stormy',emoji:'⛈',
     grad:'linear-gradient(to bottom,#0a0d12 0%,#1c2534 45%,#2e3f52 100%)',
     build(){
-      renderer.setClearColor(0x1c2534,1); syncBgUI('#1c2534');
+      renderer.setClearColor(0x1c2534,1);syncBgUI('#1c2534');
       makeDome([.04,.05,.08],[.18,.24,.30],[.12,.17,.24],.52);
       const shades=['#263238','#37474f','#2c3e50','#1a252f','#455a64'];
       const groups=[];
@@ -1666,7 +1690,6 @@ const SKY_DEFS=[
         const s=1.3+Math.random()*2,op=.65+Math.random()*.28;
         groups.push(makeCloudGroup(x,y,z,s,shades[i%shades.length],op));
       }
-      // lightning flash
       let ft=0,flash=false,fa=0;
       function anim(){
         skyAnimId=requestAnimationFrame(anim);
@@ -1686,23 +1709,19 @@ const SKY_DEFS=[
     id:'night',label:'🌙 Clear Night',emoji:'🌙',
     grad:'linear-gradient(to bottom,#000005 0%,#03052a 55%,#060820 100%)',
     build(){
-      renderer.setClearColor(0x02040f,1); syncBgUI('#02040f');
+      renderer.setClearColor(0x02040f,1);syncBgUI('#02040f');
       makeDome([0,0,.02],[.01,.02,.06],[.0,.01,.04],.5);
-      // lots of twinkling stars
       const stars=makeStars(2800,1100,2.2,.92,[[1,1,1],[.85,.92,1],[1,.96,.82],[.75,.82,1],[1,.9,.7]]);
-      // moon glow — large faint sphere
       const moonGeo=new THREE.SphereGeometry(38,16,16);
       const moonMat=new THREE.MeshBasicMaterial({color:new THREE.Color(1,.97,.85),transparent:true,opacity:.95,depthWrite:false});
       const moon=new THREE.Mesh(moonGeo,moonMat);
       moon.position.set(400,600,-300);moon.renderOrder=-980;
       scene.add(moon);skyObjects.push(moon);
-      // moon halo
       const haloGeo=new THREE.SphereGeometry(75,16,16);
       const haloMat=new THREE.MeshBasicMaterial({color:new THREE.Color(1,.98,.9),transparent:true,opacity:.06,depthWrite:false});
       const halo=new THREE.Mesh(haloGeo,haloMat);
       halo.position.copy(moon.position);halo.renderOrder=-981;
       scene.add(halo);skyObjects.push(halo);
-      // gentle star twinkle
       let t=0;
       function anim(){skyAnimId=requestAnimationFrame(anim);t+=0.012;stars.material.opacity=.88+Math.sin(t)*.05;}
       anim();
@@ -1712,7 +1731,7 @@ const SKY_DEFS=[
     id:'milky',label:'🌌 Milky Way',emoji:'🌌',
     grad:'linear-gradient(to bottom,#000005 0%,#08002a 45%,#180535 100%)',
     build(){
-      renderer.setClearColor(0x030010,1); syncBgUI('#030010');
+      renderer.setClearColor(0x030010,1);syncBgUI('#030010');
       makeDome([0,0,.01],[.02,.0,.08],[.0,.0,.05],.5);
       makeStars(1400,1100,2.0,.85,[[1,1,1],[.8,.9,1],[1,.95,.8]]);
       makeMilkyWay();
@@ -1725,14 +1744,13 @@ const SKY_DEFS=[
     id:'aurora',label:'🌌 Aurora',emoji:'🌌',
     grad:'linear-gradient(to bottom,#000005 0%,#001820 45%,#003320 100%)',
     build(){
-      renderer.setClearColor(0x000a0f,1); syncBgUI('#000a0f');
+      renderer.setClearColor(0x000a0f,1);syncBgUI('#000a0f');
       makeDome([0,.03,.04],[0,.01,.02]);
       makeStars(1600,1100,1.8,.8,[[1,1,1],[.7,1,.9],[.8,.95,1]]);
-      // three aurora curtains
       const curtains=[
-        makeAuroraCurtain(-200,-100,150,200),  // green-cyan
-        makeAuroraCurtain(200,150,175,230),     // green-blue
-        makeAuroraCurtain(0,300,130,180),       // teal-green
+        makeAuroraCurtain(-200,-100,150,200),
+        makeAuroraCurtain(200,150,175,230),
+        makeAuroraCurtain(0,300,130,180),
       ];
       let t=0;
       function anim(){
@@ -1764,15 +1782,12 @@ function buildSkySceneUI(){
     card.dataset.skyId=sky.id;
     const active=sky.id===skyActiveId;
     card.style.cssText=`cursor:pointer;border-radius:8px;overflow:hidden;border:2px solid ${active?'var(--accent)':'var(--border)'};transition:border-color .2s;touch-action:manipulation;`;
-    // gradient preview
     const preview=document.createElement('div');
     preview.style.cssText=`background:${sky.grad};height:38px;width:100%;`;
-    // label
     const lbl=document.createElement('div');
     lbl.className='sky-lbl';
     lbl.style.cssText=`font-size:8px;padding:3px 5px;background:var(--bg3);color:${active?'var(--accent)':'var(--muted)'};text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'DM Mono',monospace;letter-spacing:.3px;`;
     lbl.textContent=sky.label;
-    // clear X button if active
     if(active){
       const clr=document.createElement('div');
       clr.style.cssText='position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:3px;background:rgba(0,0,0,.5);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;';
@@ -1823,7 +1838,7 @@ function toggleTheme(){
 }
 
 // ════════════════════════════════════════════════════════════
-// PANEL CONTROLS — LEFT + RIGHT
+// PANEL CONTROLS
 // ════════════════════════════════════════════════════════════
 let leftPanelOpen=true;
 let panelOpen=true;
@@ -1876,7 +1891,6 @@ function closeAllMobilePanels(){
 }
 
 function closeMobilePanels(){
-  // Close right panel when tapping canvas — left stays (tools needed)
   if(isMobile()){
     if(panelOpen){
       panelOpen=false;
@@ -1884,7 +1898,6 @@ function closeMobilePanels(){
       document.getElementById('panelToggleBtn').textContent='›';
       const b=document.getElementById('mob-panel');if(b)b.classList.remove('on');
     }
-    // also close left if it was opened
     if(leftPanelOpen){
       leftPanelOpen=false;
       document.getElementById('leftTbar').classList.add('collapsed');
@@ -1913,7 +1926,6 @@ function setMode(m){
   mode=m;
   document.getElementById('btn-draw').classList.toggle('active',m==='draw');
   document.getElementById('btn-orbit').classList.toggle('active',m==='orbit');
-  // Mobile bottom bar
   const md=document.getElementById('mob-draw');const mo=document.getElementById('mob-orbit');
   if(md)md.classList.toggle('on',m==='draw');
   if(mo)mo.classList.toggle('on',m==='orbit');
@@ -1929,7 +1941,6 @@ function selectTool(t){
   const btn=document.getElementById('ti-'+t);if(btn)btn.classList.add(t==='eraser'?'era':'on');
   document.getElementById('bc-pen').classList.toggle('on',t==='pen');
   document.getElementById('bc-marker').classList.toggle('on',t==='marker');
-  // Mobile bottom bar
   ['pen','marker','eraser'].forEach(k=>{const e=document.getElementById('mob-'+k);if(e)e.classList.remove('on','era');});
   const mbtn=document.getElementById('mob-'+t);if(mbtn)mbtn.classList.add(t==='eraser'?'era':'on');
   if(t!=='eraser')setMode('draw');
@@ -1974,16 +1985,44 @@ function orbitToInputAngles(){
 }
 
 // ════════════════════════════════════════════════════════════
-// FILMSTRIP
+// FILMSTRIP — MAX 12 LIMIT
 // ════════════════════════════════════════════════════════════
 let activeFilmIdx=-1;
 
+function updateFilmLimitUI(){
+  const count=savedAngles.length;
+  const atLimit=count>=MAX_FILMSTRIPS;
+  const badge=document.getElementById('filmLimitBadge');
+  const countEl=document.getElementById('filmLimitCount');
+  const addBtn=document.getElementById('filmAddBtn');
+
+  if(countEl) countEl.textContent=count;
+  if(badge) badge.classList.toggle('at-limit', atLimit);
+
+  if(addBtn){
+    if(atLimit){
+      addBtn.classList.add('disabled');
+      addBtn.setAttribute('disabled','');
+      addBtn.title=`Maximum ${MAX_FILMSTRIPS} angles reached. Delete one to add more.`;
+    }else{
+      addBtn.classList.remove('disabled');
+      addBtn.removeAttribute('disabled');
+      addBtn.title='Save current camera angle';
+    }
+  }
+}
+
 function captureThumbnail(){
   renderer.render(scene,cam);
-  return cv.toDataURL('image/jpeg',0.7);
+  return cv.toDataURL('image/jpeg',0.65); // Slightly lower quality to reduce memory
 }
 
 function saveAngle(){
+  // Enforce the 12-filmstrip limit
+  if(savedAngles.length>=MAX_FILMSTRIPS){
+    showToast(`Max ${MAX_FILMSTRIPS} angles reached — delete one first`,'warn');
+    return;
+  }
   const name=document.getElementById('inName').value||`View ${savedAngles.length+1}`;
   const thumb=captureThumbnail();
   savedAngles.push({
@@ -2006,14 +2045,14 @@ function buildFilmstrip(){
     const orbitIcon=document.createElement('div');orbitIcon.className='film-orbit-icon';orbitIcon.textContent='⊙';
     const label=document.createElement('div');label.className='film-label';label.textContent=ang.name;
     const delBtn=document.createElement('button');delBtn.className='film-del';delBtn.textContent='×';
-    delBtn.title='Remove';
+    delBtn.title='Remove angle';
     delBtn.onclick=e=>{e.stopPropagation();removeAngle(i);};
     slot.appendChild(img);slot.appendChild(orbitIcon);slot.appendChild(label);slot.appendChild(delBtn);
     slot.addEventListener('click',()=>orbitToAngle(i));
-    // Touch tap for mobile
     slot.addEventListener('touchend',e=>{e.stopPropagation();orbitToAngle(i);},{passive:true});
     container.appendChild(slot);
   });
+  updateFilmLimitUI();
 }
 
 function orbitToAngle(i){
@@ -2032,6 +2071,8 @@ function orbitToAngle(i){
 }
 
 function removeAngle(i){
+  // Free the thumbnail memory reference
+  savedAngles[i].thumb=null;
   savedAngles.splice(i,1);
   if(activeFilmIdx===i)activeFilmIdx=-1;
   else if(activeFilmIdx>i)activeFilmIdx--;
@@ -2153,7 +2194,8 @@ function loadProject(){
     layerIdx=Math.min(layerIdx,layers.length-1);
     if(data.sph){sph.r=data.sph.r;sph.theta=data.sph.theta;sph.phi=data.sph.phi;}
     if(data.panTarget){panTarget.set(data.panTarget.x,data.panTarget.y,data.panTarget.z);}
-    savedAngles=data.savedAngles||[];
+    // Cap loaded angles at MAX_FILMSTRIPS
+    savedAngles=(data.savedAngles||[]).slice(0,MAX_FILMSTRIPS);
     applyRenderOrder();buildRefPlanes();buildLayerUI();buildFilmstrip();setCamPos();updateStats();
     showToast('Project loaded ✓');
   }catch(e){showToast('Load failed — '+e.message,'error');console.error(e);}
@@ -2220,12 +2262,10 @@ document.getElementById('gridBtn').classList.add('on');
 applyHsl();
 applyRenderOrder();
 
-// Init hint text for touch devices
 if('ontouchstart' in window){
   document.getElementById('hint').textContent='Draw · 1 finger draw · 2 fingers pan/zoom';
 }
 
-// Left panel: start COLLAPSED on mobile, open on desktop
 if(isMobile()){
   leftPanelOpen=false;
   document.getElementById('leftTbar').classList.add('collapsed');
@@ -2234,17 +2274,14 @@ if(isMobile()){
   leftPanelOpen=true;
   document.getElementById('leftPanelToggleBtn').textContent='›';
 }
-// Right panel starts open everywhere
 panelOpen=true;
 document.getElementById('panelToggleBtn').textContent='‹';
 updateBackdrop();
 
-// Restore theme
 try{
   if(localStorage.getItem('depth_theme')==='light'){isLight=false;toggleTheme();}
 }catch(e){}
 
-// Auto-load
 if(localStorage.getItem(SAVE_KEY)){loadProject();}
 </script>
 </body>
